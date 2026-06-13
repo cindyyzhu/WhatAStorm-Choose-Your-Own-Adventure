@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>What A Storm! — A Desert Adventure</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sand:    #e8c97a;
+      --dusk:    #c07a3a;
+      --blood:   #8b1a1a;
+      --storm:   #1a1a2e;
+      --ink:     #0d0d1a;
+      --sky:     #7ec8e3;
+      --bone:    #f5f0e8;
+      --success: #2d6a4f;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--ink);
+      font-family: 'Crimson Pro', Georgia, serif;
+      color: var(--bone);
+      overflow: hidden;
+    }
+
+    /* ── Game container ── */
+    .game {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Background layer ── */
+    .bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.55) saturate(0.8);
+      z-index: 0;
+      transition: background-image 0.4s;
+    }
+    .bg.black { background: #000; }
+
+    /* ── Scanline atmosphere ── */
+    .bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* ── Lives counter ── */
+    .lives {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid var(--sand);
+      border-radius: 6px;
+      padding: 5px 14px;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 13px;
+      color: var(--sky);
+      letter-spacing: 0.04em;
+    }
+    .lives .heart { color: var(--blood); margin-right: 2px; }
+
+    /* ── Main content card ── */
+    .card {
+      position: relative;
+      z-index: 5;
+      width: min(700px, 92vw);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* ── Title scene ── */
+    .title-wrap h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(2.2rem, 7vw, 5rem);
+      line-height: 1.1;
+      text-shadow:
+        4px 4px 0 #000,
+        0 0 40px rgba(232,201,122,0.4);
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    .title-wrap .subtitle {
+      font-size: 1.1rem;
+      color: var(--sand);
+      margin-top: 10px;
+      font-style: italic;
+    }
+    .title-wrap .author {
+      font-size: 0.95rem;
+      color: var(--bone);
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    /* ── Text bubble (scene image) ── */
+    .text-bubble {
+      max-width: 520px;
+      width: 90%;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      border: 2px solid rgba(232,201,122,0.25);
+    }
+
+    /* ── Dice result ── */
+    .dice-result {
+      background: rgba(0,0,0,0.75);
+      border: 2px solid var(--sand);
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-size: 1.2rem;
+    }
+    .dice-result .roll { font-size: 2rem; font-weight: 600; color: var(--sand); }
+    .dice-result.won  { border-color: var(--success); }
+    .dice-result.lost { border-color: var(--blood); }
+
+    /* ── Button row ── */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    /* ── Choice image buttons ── */
+    .choice-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .choice-btn:hover { transform: translateY(-3px); filter: brightness(1.15); }
+    .choice-btn:active { transform: translateY(0); }
+    .choice-btn img { display: block; height: 56px; border-radius: 8px; }
+
+    /* ── Text buttons (next / restart / play again) ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+    .btn-next    { background: var(--dusk);  color: #fff; }
+    .btn-restart { background: var(--blood); color: #fff; }
+    .btn-victory { background: var(--success); color: #fff; font-size: 1rem; padding: 14px 36px; }
+
+    /* ── Death / victory overlays ── */
+    .overlay-text {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.4rem, 5vw, 2.8rem);
+      text-shadow: 0 0 30px currentColor;
+      line-height: 1.2;
+    }
+    .overlay-text.death   { color: var(--blood); }
+    .overlay-text.victory { color: var(--sand);  }
+
+    /* ── Permanent death screen ── */
+    .perma-death {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .perma-death h2 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(1.5rem, 6vw, 3rem);
+      color: var(--blood);
+      text-shadow: 0 0 40px var(--blood);
+    }
+    .perma-death p { color: var(--bone); opacity: 0.8; font-size: 1.1rem; }
+
+    /* small restart link top-right */
+    .menu-btn {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      z-index: 10;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--bone);
+      font-size: 0.75rem;
+      padding: 5px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-family: 'Cinzel Decorative', serif;
+      letter-spacing: 0.05em;
+      opacity: 0.65;
+      transition: opacity 0.2s;
+    }
+    .menu-btn:hover { opacity: 1; }
+  </style>
+</head>
+<body>
+<div class="game">
+
+  <!-- Background -->
+  {% if scene.bg %}
+  <div class="bg" style="background-image: url('/images/{{ scene.bg }}');"></div>
+  {% else %}
+  <div class="bg black"></div>
+  {% endif %}
+
+  <!-- Lives counter -->
+  {% if scene_id != 0 %}
+  <div class="lives">
+    {% for i in range(lives) %}<span class="heart">♥</span>{% endfor %}
+    {% for i in range(3 - lives) %}<span style="opacity:0.25">♥</span>{% endfor %}
+    &nbsp; Lives left: {{ lives }}
+  </div>
+  {% endif %}
+
+  <!-- Restart/menu link -->
+  <a href="/restart" class="menu-btn">↺ Restart</a>
+
+  <!-- PERMANENT DEATH -->
+  {% if scene_id == 0 %}
+  <div class="perma-death">
+    <h2>FAIL! YOU DIED (FOREVER)!!!</h2>
+    <p>You ran out of lives. The desert claims another soul.</p>
+    <a href="/restart"><button class="btn btn-restart">Try Again From the Start</button></a>
+  </div>
+
+  <!-- SCENE 1: Title screen -->
+  {% elif scene_id == 1 %}
+  <div class="card">
+    <div class="title-wrap">
+      <h1>WHAT A STORM!</h1>
+      <div class="subtitle">A Desert Choose-Your-Own-Adventure</div>
+      <div class="author">Written by Cindy Zhu</div>
+    </div>
+    <form method="post" action="/action">
+      <input type="hidden" name="btn" value="next"/>
+      <button type="submit" class="btn btn-next">▶ Begin Adventure</button>
+    </form>
+  </div>
+
+  <!-- DEATH SCENES (6, 13, 17) -->
+  {% elif scene.type == 'death' %}
+  <div class="card">
+    {% if scene.text_img %}
+    <img src="/images/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
+    {% else %}
+    <div class="overlay-text death">YOU DIED...</div>
+    {% endif %}
+    <div class="btn-row">
+      {% if lives > 1 %}
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="restart"/>
+        <button type="submit" class="btn btn-restart">↺ Try Again ({{ lives - 1 }} {% if lives - 1 == 1 %}life{% else %}lives{% endif %} left)</button>
+      </form>
+      {% else %}
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="restart"/>
+        <button type="submit" class="btn btn-restart">↺ Last Chance...</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- VICTORY SCENE (12) -->
+  {% elif scene.type == 'victory' %}
+  <div class="card">
+    {% if scene.text_img %}
+    <img src="/images/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
+    {% endif %}
+    <div class="overlay-text victory">🎉 YOU WIN!</div>
+    <a href="/restart"><button class="btn btn-victory">Play Again</button></a>
+  </div>
+
+  <!-- DICE SCENE (11) -->
+  {% elif scene.type == 'dice' %}
+  <div class="card">
+    {% if scene.text_img %}
+    <img src="/images/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
+    {% endif %}
+    {% if dice_result %}
+    <div class="dice-result {% if dice_won %}won{% else %}lost{% endif %}">
+      <div class="roll">🎲 You rolled: {{ dice_result }}!</div>
+      <div>{% if dice_won %}Even — you won!{% else %}Odd... uh oh...{% endif %}</div>
+    </div>
+    {% endif %}
+    <div class="btn-row">
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="next"/>
+        <button type="submit" class="btn btn-next">{% if dice_result %}See What Happens ▶{% else %}🎲 Roll the Dice{% endif %}</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ALL OTHER SCENES -->
+  {% else %}
+  <div class="card">
+    {% if scene.text_img %}
+    <img src="/images/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
+    {% endif %}
+
+    <div class="btn-row">
+      {% if scene.type == 'next' %}
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="next"/>
+        <button type="submit" class="btn btn-next">Next ▶</button>
+      </form>
+
+      {% elif scene.type == 'choices12' %}
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="c1"/>
+        <button type="submit" class="choice-btn">
+          <img src="/images/choice1.png" alt="Choice 1"/>
+        </button>
+      </form>
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="c2"/>
+        <button type="submit" class="choice-btn">
+          <img src="/images/choice2.png" alt="Choice 2"/>
+        </button>
+      </form>
+
+      {% elif scene.type == 'choices123' %}
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="c1"/>
+        <button type="submit" class="choice-btn">
+          <img src="/images/choice1.png" alt="Choice 1"/>
+        </button>
+      </form>
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="c2"/>
+        <button type="submit" class="choice-btn">
+          <img src="/images/choice2.png" alt="Choice 2"/>
+        </button>
+      </form>
+      <form method="post" action="/action">
+        <input type="hidden" name="btn" value="c3"/>
+        <button type="submit" class="choice-btn">
+          <img src="/images/choice3.png" alt="Choice 3"/>
+        </button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>
