@@ -1,0 +1,1 @@
+This web-app was created using Flask. However, it was based on the original game in Python Play only, which can be found here: https://github.com/cindyyzhu/ICS2O-Culminating-Choose-Your-Own-Adventure 
