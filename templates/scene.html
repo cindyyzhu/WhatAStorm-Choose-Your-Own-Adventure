@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="icon" href="{{ url_for('static', filename='../static/images/CZ.png') }}">
+  <link rel="icon" href="{{ url_for('static', filename='images/CZ.png') }}">
   <title>What A Storm! — A Desert Adventure</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
@@ -228,10 +228,16 @@
     .menu-btn:hover { opacity: 1; }
 
     .footer {
-      margin-top: 2rem;
+      position: absolute;
+      bottom: 12px;
+      left: 0;
+      right: 0;
+      z-index: 10;
       text-align: center;
-      color: var(--text-muted);
+      color: var(--bone);
+      opacity: 0.5;
       font-size: 0.75rem;
+      pointer-events: none;
     }
 
   </style>
@@ -385,10 +391,10 @@
   </div>
   {% endif %}
 
+  <footer class="footer">
+    Made with <span class="heart">♥</span> by Cindy Zhu 2026
+  </footer>
+
 </div>
 </body>
-
-<footer class="footer">
-  Made with <span class="heart">♥</span> by Cindy Zhu 2026
-</footer>
 </html>
