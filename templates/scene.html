@@ -232,7 +232,7 @@
 
   <!-- Background -->
   {% if scene.bg %}
-  <div class="bg" style="background-image: url('/images/{{ scene.bg }}');"></div>
+  <div class="bg" style="background-image: url('/{{ scene.bg }}');"></div>
   {% else %}
   <div class="bg black"></div>
   {% endif %}
@@ -275,7 +275,7 @@
   {% elif scene.type == 'death' %}
   <div class="card">
     {% if scene.text_img %}
-    <img src="/images/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
+    <img src="/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
     {% else %}
     <div class="overlay-text death">YOU DIED...</div>
     {% endif %}
@@ -298,7 +298,7 @@
   {% elif scene.type == 'victory' %}
   <div class="card">
     {% if scene.text_img %}
-    <img src="/images/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
+    <img src="/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
     {% endif %}
     <div class="overlay-text victory">🎉 YOU WIN!</div>
     <a href="/restart"><button class="btn btn-victory">Play Again</button></a>
@@ -308,7 +308,7 @@
   {% elif scene.type == 'dice' %}
   <div class="card">
     {% if scene.text_img %}
-    <img src="/images/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
+    <img src="/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
     {% endif %}
     {% if dice_result %}
     <div class="dice-result {% if dice_won %}won{% else %}lost{% endif %}">
@@ -328,7 +328,7 @@
   {% else %}
   <div class="card">
     {% if scene.text_img %}
-    <img src="/images/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
+    <img src="/{{ scene.text_img }}" class="text-bubble" alt="scene text"/>
     {% endif %}
 
     <div class="btn-row">
